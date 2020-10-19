@@ -97,9 +97,25 @@ router.get('/students/edit', function(req, res) {
   })
 })
 router.post('/students/edit', function(req, res) {
-  
+  // 步骤：1获取表单的数据， 2更新Student.upData数据， 3 发送响应
+  // console.log(req.body);
+  // console.log(req.query);
+  Student.updataById(req.body, function(err, data) {
+    if(err) {
+      return res.status(500).send('server error')
+    }
+    res.redirect('/students')
+  })
 })
 router.get('/students/delete', function(req, res) {
+  // 步骤： 1 获取要删除的id 2 根据id执行删除操作 3 根据操作结果响应数据
+  // console.log(req.query.id);
   
+  Student.deleteById(req.query.id, function(err) {
+    if(err) {
+      return res.status(500).send('server error');
+    }
+    res.redirect('/students');
+  })
 })
 module.exports = router

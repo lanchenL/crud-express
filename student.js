@@ -20,7 +20,7 @@ exports.save = function(student, callback) {
       return callback(err);
     }
     var students = JSON.parse(data).students;
-    student.id = students[students.length - 1].id + 1
+    student.id = students.length == 0 ? 1 : students[students.length - 1].id + 1
     // student.id = students.length + 1;
     // console.log(students[students.length - 1].id);
     students.push(student);
@@ -44,6 +44,7 @@ exports.updataById = function(student, callback) {
       return callback(err);
     }
     var students = JSON.parse(data).students;
+    student.id = parseInt(student.id);
     var stu = students.find(function(item) {
       return item.id === student.id;
     })
@@ -64,7 +65,7 @@ exports.updataById = function(student, callback) {
   })
 }
 
-// 通过id来找到对应的数组
+// 通过id来找到对应的数组,对应edit页面
 exports.findById = function(id, callback) {
   fs.readFile(dbPath, 'utf8', function(err, data) {
     if(err) {
@@ -72,13 +73,33 @@ exports.findById = function(id, callback) {
     }
     var students = JSON.parse(data).students;
     var ret = students.find(function(item) {
-      return item.id = id
+      return item.id === id;
     })
     callback(null, ret)
   })
 }
 
 // 删除学生信息
-exports.delete = function() {
-
+exports.deleteById = function(id, callback) {
+  fs.readFile(dbPath, 'utf8', function(err, data) {
+    if(err) {
+      return callback(err);
+    }
+    var students = JSON.parse(data).students;
+    // student.id = parseInt(student.id);
+    var deleteId = students.findIndex(function(item) {
+      return item.id === parseInt(id);
+    })
+    students.splice(deleteId, 1);
+    // 把对象转化成字符串
+  var fileData = JSON.stringify({
+    students: students
+  })
+    fs.writeFile(dbPath, fileData, function(error) {
+      if(error) {
+        return callback(error);
+      }
+      callback(null);
+    })
+  })
 }
